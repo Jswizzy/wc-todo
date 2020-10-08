@@ -1,10 +1,28 @@
-import { LitElement, html } from "lit-element";
+import { LitElement, css, html } from "lit-element";
 
 export class TodoList extends LitElement {
   static get properties() {
     return {
       todos: { type: Array },
     };
+  }
+
+  static get styles() {
+    return css`
+      :host {
+        color: blue;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      button {
+        background-color: transparent;
+        border: none;
+      }
+    `;
   }
 
   render() {
