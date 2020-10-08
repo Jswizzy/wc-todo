@@ -1,5 +1,5 @@
-import "./styles.css";
 import { LitElement, html } from "lit-element";
+import { TodoList } from "./todos-list.js";
 
 const author = "open-wc";
 const homepage = "https://open-wc.org";
@@ -20,25 +20,24 @@ class TodoApp extends LitElement {
     ];
   }
   render() {
+    const finishedCount = this.todos.filter((e) => e.finished).length;
+    const unfinishedCount = this.todos.length - finishedCount;
+
     return html`
       <h1>Todo App</h1>
 
       <input id="addTodoInput" placeholder="Name" />
       <button @click="${this._addTodo}">Add</button>
-      <ol>
-        ${this.todos.map(
-          (todo) =>
-            html`<li>
-              <input
-                type="checkbox"
-                .checked=${todo.finished}
-                @change="${(e) => this._changeTodoFinished(e, todo)}"
-              />
-              ${todo.text}
-              <button @click=${() => this._removeTodo(todo)}>X</button>
-            </li>`
-        )}
-      </ol>
+
+      <todo-list
+        .todos="${this.todos}"
+        @change-todo-finished="${this._changeTodoFinished}"
+        @remove-todo="${this._removeTodo}"
+      ></todo-list>
+
+      <div>Total finished: ${finishedCount}</div>
+      <div>Total unfinished: ${unfinishedCount}</div>
+
       ${footerTemplate}
     `;
   }
@@ -49,11 +48,11 @@ class TodoApp extends LitElement {
 
     this.todos = [...this.todos, { text, finished: false }];
   }
-  _removeTodo(removeTodo) {
-    this.todos = this.todos.filter((todo) => todo !== removeTodo);
+  _removeTodo(e) {
+    this.todos = this.todos.filter((todo) => todo !== e.detail);
   }
-  _changeTodoFinished(e, changedTodo) {
-    const finished = e.target.checked;
+  _changeTodoFinished(e) {
+    const { changedTodo, finished } = e.detail;
 
     this.todos = this.todos.map((todo) =>
       todo !== changedTodo ? todo : { ...changedTodo, finished }
